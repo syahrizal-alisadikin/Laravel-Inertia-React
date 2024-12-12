@@ -1,9 +1,26 @@
 //import React
 import React from "react";
+import { useForm } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
+import Pagination from "@/Components/Pagination";
 import { Head } from "@inertiajs/react";
 
-export default function UserIndex({ users }) {
+export default function UserIndex({ users, filters }) {
+    const {
+        data: formData,
+        get,
+        setData,
+    } = useForm({
+        search: filters.search || "",
+    });
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        get(route("user.index"), {
+            preserveState: true,
+            preserveScroll: true,
+        });
+    };
     return (
         <AuthenticatedLayout
             header={
@@ -16,7 +33,26 @@ export default function UserIndex({ users }) {
 
             <div className="py-12">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                    <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
+                    {/* cari */}
+                    <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg px-4 py-4">
+                        <form onSubmit={handleSearch}>
+                            <input
+                                type="text"
+                                value={formData.search}
+                                onChange={(e) =>
+                                    setData("search", e.target.value)
+                                }
+                                placeholder="Cari..."
+                                className="form-control rounded-md mx-2"
+                            />
+
+                            <button
+                                type="submit"
+                                className="bg-indigo-700 text-white px-4 py-2 border border-indigo-600 rounded-md"
+                            >
+                                Cari
+                            </button>
+                        </form>
                         <div className="p-6 text-gray-900">
                             <table className="min-w-full">
                                 <thead>
@@ -39,7 +75,7 @@ export default function UserIndex({ users }) {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {users.map((user, index) => {
+                                    {users.data.map((user, index) => {
                                         return (
                                             <tr key={index}>
                                                 <td className="px-6 py-4 whitespace-nowrap">
@@ -81,6 +117,7 @@ export default function UserIndex({ users }) {
                                     ))} */}
                                 </tbody>
                             </table>
+                            <Pagination links={users.links} />
                         </div>
                     </div>
                 </div>

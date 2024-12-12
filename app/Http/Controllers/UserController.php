@@ -8,11 +8,17 @@ use Inertia\Inertia;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::paginate(10);
+        $users = User::query();
+        if ($request->input('search')) {
+            $users->where('name', 'like', '%' . $request->input('search') . '%')
+                ->orWhere('email', 'like', '%' . $request->input('search') . '%');
+        }
+        $users =  $users->paginate(10)->withQueryString();
         return Inertia::render('User/Index', [
-            'users' => $users
+            'users' => $users,
+            'filters' => $request->only(['search'])
         ]);
     }
 }
