@@ -20,7 +20,8 @@ export default function AuthenticatedLayout({ header, children }) {
         {
             name: "User",
             href: route("user.index"),
-            current: route().current("user.index"),
+            current:
+                route().current("user.index") || route().current("user.create"),
         },
         // {
         //     name: "Absen",
